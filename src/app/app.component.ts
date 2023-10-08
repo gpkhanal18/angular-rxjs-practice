@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, tap, switchMap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest, forkJoin } from 'rxjs';
 
 
 @Component({
@@ -15,14 +15,51 @@ export class AppComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
-    // this.scenario1();
-    this.scneario2();
-    // this.scenario3();
+    // this.switchMap1();
+    // this.switchMap2();
+    // this.switchMap3();
+    // this.switchMap4();
+    // this.forkjoin();
+    // this.combineLatest();
+  }
+
+
+  private combineLatest(){
+
+    // forkJoin - When all observables are completed, emit the last emitted value 
+    // from each.combineLatest - When any observable emits a value, 
+    // emit the latest value from each.
+  
+    combineLatest([
+      this.getAllPosts(),
+      this.getUsers(),
+    ]).subscribe((result) => {console.log('combineLatest result is ', result)})
+
+  }
+
+  private forkjoin() {
+
+    forkJoin({
+      posts: this.getAllPosts(),
+      comments: this.getComments()
+    }).subscribe(response => {
+      console.log('fork join response is ' , response);
+    })
+
   }
 
 
 
-  private scenario3() {
+  private switchMap4() {
+    this.getAllPosts().pipe(
+      switchMap(posts => this.getPostsById(posts[5].id).pipe(
+        map(post => ({ posts, post }))
+      ))
+    ).subscribe(result => console.log(result));
+  }
+
+
+  private switchMap3() {
 
     this.getAllPosts().pipe(
       switchMap(posts => this.getPostsById(posts[9].id).pipe(
@@ -35,20 +72,20 @@ export class AppComponent implements OnInit {
 
 
 
-  private scneario2() {
+  private switchMap2() {
 
-  this.getAllPosts().pipe(
-    switchMap(posts => this.getPostsById(posts[2].id).pipe(
-      map(post => {
-        return post;
-      })
-    ))
-  ).subscribe(result => console.log(result));
+    this.getAllPosts().pipe(
+      switchMap(posts => this.getPostsById(posts[2].id).pipe(
+        map(post => {
+          return post;
+        })
+      ))
+    ).subscribe(result => console.log(result));
 
   }
 
 
-  private scenario1(): void {
+  private switchMap1(): void {
     const obs1$ = this.http
       .get<any[]>('https://jsonplaceholder.typicode.com/posts');
 
@@ -76,7 +113,7 @@ export class AppComponent implements OnInit {
       .get<IPost[]>('https://jsonplaceholder.typicode.com/posts');
   }
 
-  private getPostsById(postId: number): Observable<{}> {
+  private getPostsById(postId: number) {
     return this.http
       .get<IPost>('https://jsonplaceholder.typicode.com/posts/' + postId);
   }

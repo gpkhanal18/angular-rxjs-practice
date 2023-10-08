@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, tap, switchMap } from 'rxjs/operators';
-import { Observable, combineLatest, forkJoin } from 'rxjs';
+import { Observable, of, combineLatest, forkJoin } from 'rxjs';
 
 
 @Component({
@@ -21,19 +21,103 @@ export class AppComponent implements OnInit {
     // this.switchMap4();
     // this.forkjoin();
     // this.combineLatest();
+    // this.mapArrayOfObjects();
+    // this.mapJsonArrayOfObjects();
+    // this.mapJsonArrayOfObjects2();
+    this.mapJsonArrayOfObjects3();
+
+
   }
 
 
-  private combineLatest(){
+  private mapJsonArrayOfObjects3() {
+    const users = [
+      { 'name': 'gopal1', age: 31 },
+      { 'name': 'gopal2', age: 32 },
+      { 'name': 'gopal3', age: 33 }
+    ];
+
+    of(users).pipe(
+      map(users => {
+        const data = users.map(user => ({
+          ...user,
+          name: user.name + ' modified me',
+          email: 'gopal@gmail.com'
+        }));
+        return data;
+      })
+    ).subscribe(result => console.log(result));
+
+  }
+
+
+  private mapJsonArrayOfObjects2() {
+    const users = [
+      { 'name': 'gopal1', age: 31 },
+      { 'name': 'gopal2', age: 32 },
+      { 'name': 'gopal3', age: 33 }
+    ];
+
+    of(users).pipe(
+      map(users => {
+        const data = users.map(user => ({
+          ...user,
+          email: 'gopal@gmail.com'
+        }));
+        return data;
+      })
+    ).subscribe(result => console.log(result));
+
+  }
+
+  private mapJsonArrayOfObjects(){
+    const users = [
+      {'name':'gopal1', age:31},
+      { 'name': 'gopal2', age: 32 },
+      { 'name': 'gopal3', age: 33 }
+    ];
+
+    of(users).pipe(
+      map(users => {
+        const data = users.map(user => ({
+        name: 'gopal',
+        age : 1
+        }));
+        return data;
+      })
+    ).subscribe(result => console.log(result));
+
+  }
+
+
+  private mapArrayOfObjects() {
+
+    const names = [
+      'Alice',
+      'Bryan',
+      'John',
+    ];
+
+    of(names).pipe(
+      map(names => {
+        return names.map(name => name + 'gopal');
+      })
+    ).subscribe(result => console.log(result));
+
+  }
+
+  private combineLatest() {
 
     // forkJoin - When all observables are completed, emit the last emitted value 
     // from each.combineLatest - When any observable emits a value, 
     // emit the latest value from each.
-  
+
     combineLatest([
       this.getAllPosts(),
       this.getUsers(),
-    ]).subscribe((result) => {console.log('combineLatest result is ', result)})
+    ]).subscribe((result) => {
+      console.log('combineLatest result is ', result)
+    })
 
   }
 
@@ -43,7 +127,7 @@ export class AppComponent implements OnInit {
       posts: this.getAllPosts(),
       comments: this.getComments()
     }).subscribe(response => {
-      console.log('fork join response is ' , response);
+      console.log('fork join response is ', response);
     })
 
   }
@@ -108,7 +192,7 @@ export class AppComponent implements OnInit {
     ).subscribe(console.log);
   }
 
-  private getAllPosts() {
+  private getAllPosts(){
     return this.http
       .get<IPost[]>('https://jsonplaceholder.typicode.com/posts');
   }

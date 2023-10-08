@@ -1,8 +1,8 @@
+import { MostUsedRxjsService } from './services/most-used-rxjs.service';
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, tap, switchMap } from 'rxjs/operators';
 import { Observable, of, combineLatest, forkJoin } from 'rxjs';
-
 
 @Component({
   selector: 'app-root',
@@ -12,7 +12,7 @@ import { Observable, of, combineLatest, forkJoin } from 'rxjs';
 export class AppComponent implements OnInit {
   title = 'angular-rxjs-practice';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private murs: MostUsedRxjsService) { }
 
   ngOnInit(): void {
     // this.switchMap1();
@@ -24,7 +24,10 @@ export class AppComponent implements OnInit {
     // this.mapArrayOfObjects();
     // this.mapJsonArrayOfObjects();
     // this.mapJsonArrayOfObjects2();
-    this.mapJsonArrayOfObjects3();
+    // this.mapJsonArrayOfObjects3();
+
+    // Tutorials 
+    this.murs.mostUsedRxjsOperators();
 
 
   }
